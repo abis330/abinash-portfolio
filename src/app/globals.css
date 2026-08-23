@@ -1,0 +1,236 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Design tokens — dark-only, deliberately committed.
+   Canvas #050505 · emerald accent · hairline borders.
+   Chart marks use --viz-* (validated on the #050505 surface):
+     series  #059669  in-band, >=3:1
+     anomaly #d03b3b  status:critical, always paired with a ring + label
+   ============================================================ */
+
+:root {
+  color-scheme: dark;
+
+  --canvas: #050505;
+  --surface: #0a0a0a;
+  --surface-2: #101013;
+  --line: #26262b;
+  --line-soft: #1a1a1e;
+
+  --ink: #f2f2f2;
+  --ink-2: #a1a1aa;
+  --ink-3: #71717a;
+
+  --accent: #10b981;
+  --accent-bright: #34d399;
+  --accent-dim: #059669;
+  --accent-wash: rgba(16, 185, 129, 0.08);
+  --accent-line: rgba(16, 185, 129, 0.28);
+
+  --viz-series: #059669;
+  --viz-anomaly: #d03b3b;
+  --viz-grid: #1c1c20;
+
+  --glow: 0 0 24px rgba(16, 185, 129, 0.28);
+  --glow-strong: 0 0 44px rgba(16, 185, 129, 0.45);
+
+  --radius: 0.625rem;
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-bright: var(--accent-bright);
+  --color-accent-dim: var(--accent-dim);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-face), ui-monospace, "JetBrains Mono", monospace;
+
+  --radius-card: var(--radius);
+}
+
+/* ---------- base ---------- */
+
+* {
+  border-color: var(--line);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(16, 185, 129, 0.28);
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a30;
+  border-radius: 99px;
+  border: 2px solid var(--canvas);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a42;
+}
+
+/* ---------- ambient page texture ---------- */
+
+.grid-field {
+  background-image:
+    linear-gradient(to right, var(--line-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line-soft) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 20%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 20%, transparent 78%);
+}
+
+.accent-bloom {
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 0%,
+    rgba(16, 185, 129, 0.13),
+    transparent 70%
+  );
+}
+
+/* ---------- reusable surfaces ---------- */
+
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.card:hover {
+  background-color: var(--surface-2);
+  border-color: var(--accent-line);
+}
+
+.rule {
+  height: 1px;
+  background: linear-gradient(to right, var(--line), transparent);
+}
+
+/* ---------- scroll reveal ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+  }
+  50% {
+    opacity: 0.75;
+    box-shadow: 0 0 0 5px rgba(16, 185, 129, 0);
+  }
+}
+
+.pulse-dot {
+  animation: pulse-dot 2.4s ease-in-out infinite;
+}
+
+@keyframes caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.caret {
+  animation: caret 1.05s steps(1) infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee 42s linear infinite;
+}
+
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
